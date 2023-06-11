@@ -47,10 +47,11 @@ public:
             throw NullException("Null head\n");
         if (head != tail) {
             auto temp = head;
-            while (temp->next != tail)
+            while (temp->next != tail) {
                 temp = temp->next;
-            temp->next.reset();
+            }
             tail = temp;
+            tail->next.reset();
         } else
             head.reset();
     }
