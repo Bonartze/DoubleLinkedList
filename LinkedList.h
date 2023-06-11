@@ -5,6 +5,7 @@
 #ifndef UNTITLED58_LINKEDLIST_H
 #define UNTITLED58_LINKEDLIST_H
 
+#include "NullException.h"
 #include <memory>
 #include <iostream>
 
@@ -21,20 +22,17 @@ template<typename T>
 class LinkedList {
 private:
     std::shared_ptr<Node<T>> head;
+    std::shared_ptr<Node<T>> tail;
 public:
     LinkedList(T d) {
-        head = std::make_shared<Node<T>>(Node<T>{d});
+        tail = head = std::make_shared<Node<T>>(Node<T>{d});
     }
 
     void add_end(T d) {
-        auto temp = head;
-        while (temp->next) {
-            temp = temp->next;
-        }
-        temp->next = std::make_shared<Node<T>>(Node<T>{d});
-        temp->next->next = nullptr;
-        temp->next->prev = temp;
-        temp->next->data = d;
+        auto temp = std::make_shared<Node<T>>(Node<T>{d});
+        temp->prev = tail;
+        tail->next = temp;
+        tail = temp;
     }
 
     void add_beg(T d) {
@@ -42,6 +40,29 @@ public:
         temp->next = head;
         head->prev = temp;
         head = temp;
+    }
+
+    void delete_end() {
+        if (!head)
+            throw NullException("Null head\n");
+        if (head != tail) {
+            auto temp = head;
+            while (temp->next != tail)
+                temp = temp->next;
+            temp->next.reset();
+            tail = temp;
+        } else
+            head.reset();
+    }
+
+    void delete_begin() {
+        if (!head)
+            throw NullException("Null head\n");
+        if (head != tail) {
+            head = head->next;
+            head->prev.reset();
+        } else
+            head.reset();
     }
 
     friend std::ostream &operator<<(std::ostream &os, LinkedList<T> l) {
