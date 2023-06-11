@@ -13,7 +13,7 @@ template<typename T>
 struct Node {
     T data;
     std::shared_ptr<Node<T>> next;
-    std::weak_ptr<Node<T>> prev;
+    std::shared_ptr<Node<T>> prev;
 
     Node(T d) : data(d), next(nullptr) {}
 };
@@ -46,11 +46,7 @@ public:
         if (!head)
             throw NullException("Null head\n");
         if (head != tail) {
-            auto temp = head;
-            while (temp->next != tail) {
-                temp = temp->next;
-            }
-            tail = temp;
+            tail = tail->prev;
             tail->next.reset();
         } else
             head.reset();
